@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Рулетка</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #080808;
+            color: white;
+            font-family: Arial, sans-serif;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 900px;
+            max-width: 95%;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 35px;
+            font-size: 42px;
+        }
+
+        .roulette-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 18px;
+            background: #111;
+            border: 1px solid #252525;
+            padding: 25px 0;
+        }
+
+        /* Центральная линия */
+        .pointer {
+            position: absolute;
+            z-index: 10;
+
+            top: 0;
+            left: 50%;
+
+            transform: translateX(-50%);
+
+            width: 4px;
+            height: 100%;
+
+            background: white;
+
+            box-shadow:
+                0 0 10px rgba(255,255,255,.8);
+        }
+
+        .items {
+            display: flex;
+            gap: 12px;
+
+            transform: translateX(0);
+
+            will-change: transform;
+        }
+
+        .item {
+            flex: 0 0 120px;
+
+            height: 150px;
+
+            background: #191919;
+            border: 1px solid #292929;
+
+            border-radius: 14px;
+
+            display: flex;
+            flex-direction: column;
+
+            justify-content: center;
+            align-items: center;
+
+            gap: 10px;
+
+            user-select: none;
+        }
+
+        .item img {
+            width: 85px;
+            height: 85px;
+
+            object-fit: contain;
+        }
+
+        .item-name {
+            font-size: 14px;
+            color: #ddd;
+
+            max-width: 105px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        button {
+            margin-top: 30px;
+
+            padding: 14px 45px;
+
+            border: none;
+            border-radius: 12px;
+
+            background: white;
+            color: black;
+
+            font-size: 17px;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: .2s;
+        }
+
+        button:hover {
+            transform: scale(1.04);
+        }
+
+        button:active {
+            transform: scale(.97);
+        }
+
+        button:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #result {
+            margin-top: 25px;
+
+            min-height: 30px;
+
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .loading {
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Рулетка</h1>
+
+    <div class="roulette-wrapper">
+        <div class="pointer"></div>
+
+        <div class="items" id="items">
+            <div class="loading">Загрузка предметов...</div>
+        </div>
+    </div>
+
+    <button id="spinButton" disabled>
+        Крутить
+    </button>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+/*
+    ==========================================
+    НАСТРОЙКИ
+    ==========================================
+*/
+
+const GITHUB_USER = "ТВОЙ_GITHUB_USERNAME";
+const GITHUB_REPOSITORY = "ТВОЙ_REPOSITORY";
+
+const TEXTURES_FOLDER = "Textures";
+
+
+/*
+    ==========================================
+    ЭЛЕМЕНТЫ
+    ==========================================
+*/
+
+const itemsContainer = document.getElementById("items");
+const spinButton = document.getElementById("spinButton");
+const result = document.getElementById("result");
+
+
+let items = [];
+let spinning = false;
+
+
+/*
+    ==========================================
+    ПОЛУЧЕНИЕ GIF ИЗ GITHUB
+    ==========================================
+*/
+
+async function loadTextures() {
+
+    try {
+
+        const apiURL =
+            `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPOSITORY}/contents/${TEXTURES_FOLDER}`;
+
+        const response = await fetch(apiURL);
+
+        if (!response.ok) {
+            throw new Error(
+                `GitHub API error: ${response.status}`
+            );
+        }
+
+        const files = await response.json();
+
+        /*
+            Оставляем только GIF
+        */
+
+        const gifFiles = files.filter(file =>
+            file.type === "file" &&
+            file.name.toLowerCase().endsWith(".gif")
+        );
+
+        if (gifFiles.length === 0) {
+            throw new Error("В папке Textures нет GIF файлов.");
+        }
+
+
+        /*
+            Создаём предметы
+        */
+
+        items = gifFiles.map(file => {
+
+            /*
+                Убираем .gif
+
+                Например:
+
+                Алмаз.gif
+                ↓
+                Алмаз
+            */
+
+            const name = file.name
+                .replace(/\.gif$/i, "");
+
+
+            return {
+                name: name,
+                url: file.download_url
+            };
+
+        });
+
+
+        /*
+            Перемешиваем порядок
+        */
+
+        shuffle(items);
+
+
+        /*
+            Строим рулетку
+        */
+
+        renderRoulette();
+
+
+        spinButton.disabled = false;
+
+    } catch (error) {
+
+        console.error(error);
+
+        itemsContainer.innerHTML = `
+            <div style="
+                width:100%;
+                padding:30px;
+                color:#ff5555;
+            ">
+                Не удалось загрузить предметы
+            </div>
+        `;
+
+        result.textContent = error.message;
+    }
+}
+
+
+/*
+    ==========================================
+    ПЕРЕМЕШИВАНИЕ
+    ==========================================
+*/
+
+function shuffle(array) {
+
+    for (let i = array.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [array[i], array[j]] =
+        [array[j], array[i]];
+    }
+
+}
+
+
+/*
+    ==========================================
+    СОЗДАНИЕ РУЛЕТКИ
+    ==========================================
+*/
+
+function renderRoulette() {
+
+    itemsContainer.innerHTML = "";
+
+
+    /*
+        Дублируем предметы несколько раз,
+        чтобы рулетка могла долго ехать.
+    */
+
+    const rouletteItems = [];
+
+    for (let i = 0; i < 8; i++) {
+
+        items.forEach(item => {
+
+            rouletteItems.push(item);
+
+        });
+
+    }
+
+
+    rouletteItems.forEach(item => {
+
+        const element = document.createElement("div");
+
+        element.className = "item";
+
+
+        const image = document.createElement("img");
+
+        image.src = item.url;
+
+        image.alt = item.name;
+
+
+        const name = document.createElement("div");
+
+        name.className = "item-name";
+
+        name.textContent = item.name;
+
+
+        element.appendChild(image);
+        element.appendChild(name);
+
+        itemsContainer.appendChild(element);
+
+    });
+
+}
+
+
+/*
+    ==========================================
+    КРУТКА
+    ==========================================
+*/
+
+function spin() {
+
+    if (spinning || items.length === 0)
+        return;
+
+
+    spinning = true;
+
+    spinButton.disabled = true;
+
+    result.textContent = "";
+
+
+    /*
+        Сбрасываем позицию
+    */
+
+    itemsContainer.style.transition = "none";
+
+    itemsContainer.style.transform =
+        "translateX(0px)";
+
+
+    /*
+        Даём браузеру применить позицию
+    */
+
+    requestAnimationFrame(() => {
+
+        requestAnimationFrame(() => {
+
+            /*
+                Случайный победитель
+            */
+
+            const winnerIndex =
+                Math.floor(Math.random() * items.length);
+
+
+            /*
+                Берём элемент из первой копии,
+                но крутим далеко вперёд
+            */
+
+            const rounds = 5;
+
+            const actualIndex =
+                rounds * items.length + winnerIndex;
+
+
+            const elements =
+                itemsContainer.children;
+
+
+            const winner =
+                elements[actualIndex];
+
+
+            if (!winner) {
+
+                spinning = false;
+                spinButton.disabled = false;
+
+                return;
+            }
+
+
+            /*
+                Центр рулетки
+            */
+
+            const containerCenter =
+                document.querySelector(".roulette-wrapper")
+                .offsetWidth / 2;
+
+
+            /*
+                Центр предмета
+            */
+
+            const itemCenter =
+                winner.offsetLeft +
+                winner.offsetWidth / 2;
+
+
+            /*
+                Небольшой случайный сдвиг,
+                чтобы результат выглядел живее
+            */
+
+            const randomOffset =
+                (Math.random() - 0.5) * 20;
+
+
+            const target =
+                containerCenter -
+                itemCenter +
+                randomOffset;
+
+
+            /*
+                Анимация
+            */
+
+            itemsContainer.style.transition =
+                "transform 5s cubic-bezier(.12,.75,.15,1)";
+
+
+            itemsContainer.style.transform =
+                `translateX(${target}px)`;
+
+
+            /*
+                После завершения
+            */
+
+            setTimeout(() => {
+
+                result.textContent =
+                    `Выпало: ${items[winnerIndex].name}`;
+
+                spinning = false;
+
+                spinButton.disabled = false;
+
+            }, 5100);
+
+        });
+
+    });
+
+}
+
+
+/*
+    ==========================================
+    КНОПКА
+    ==========================================
+*/
+
+spinButton.addEventListener("click", spin);
+
+
+/*
+    ==========================================
+    ЗАПУСК
+    ==========================================
+*/
+
+loadTextures();
+
+</script>
+
+</body>
+</html>
