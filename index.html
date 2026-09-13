@@ -35,6 +35,50 @@
             font-size: 42px;
         }
 
+        /* ===================== TURNSTILE ГЕЙТ ===================== */
+
+        #turnstileOverlay {
+            position: fixed;
+            inset: 0;
+            background: #080808;
+            z-index: 500;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 22px;
+        }
+
+        #turnstileOverlay.hidden {
+            display: none;
+        }
+
+        #turnstileOverlay h2 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        #turnstileOverlay p {
+            color: #999;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        #turnstileError {
+            color: #ff5f5f;
+            font-size: 13px;
+            min-height: 16px;
+        }
+
+        .app-content {
+            display: none;
+        }
+
+        .app-content.visible {
+            display: block;
+        }
+
         /* ===================== AUTH UI ===================== */
 
         .auth-bar {
@@ -299,6 +343,22 @@
 
 <body>
 
+<!-- ===================== TURNSTILE ГЕЙТ ===================== -->
+<div id="turnstileOverlay">
+    <h2>Проверка перед входом</h2>
+    <p>Подтвердите, что вы не робот</p>
+
+    <div class="cf-turnstile"
+         data-sitekey="0x4AAAAAAEyoRybxXYtoTAtX"
+         data-callback="onTurnstileSuccess"
+         data-error-callback="onTurnstileError">
+    </div>
+
+    <div id="turnstileError"></div>
+</div>
+
+<div class="app-content" id="appContent">
+
 <!-- ===================== AUTH BAR ===================== -->
 <div class="auth-bar" id="authBar">
     <!-- Заполняется скриптом: либо кнопки Войти/Регистрация, либо чип пользователя -->
@@ -345,6 +405,9 @@
 
 </div>
 
+</div><!-- /appContent -->
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
 
 /*
@@ -390,6 +453,56 @@ let spinning = false;
 
 let authMode = "login"; // "login" | "register"
 let currentUser = null; // { username, balance } — только для отображения в браузере
+
+
+/*
+    ==========================================
+    TURNSTILE (гейт перед страницей)
+    ==========================================
+*/
+
+async function onTurnstileSuccess(token) {
+
+    const errorBox = document.getElementById("turnstileError");
+    errorBox.textContent = "Проверяем...";
+
+    if (WORKER_URL.includes("ЗАМЕНИТЕ")) {
+        errorBox.textContent = "Сначала укажите WORKER_URL в коде";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(WORKER_URL + "/api/verify-turnstile", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            errorBox.textContent = "Проверка не пройдена, попробуйте ещё раз";
+            if (window.turnstile) window.turnstile.reset();
+            return;
+        }
+
+        document.getElementById("turnstileOverlay").classList.add("hidden");
+        document.getElementById("appContent").classList.add("visible");
+
+        loadSession();
+        loadTextures();
+
+    } catch (error) {
+        console.error(error);
+        errorBox.textContent = "Не удалось связаться с сервером";
+    }
+}
+
+function onTurnstileError() {
+    document.getElementById("turnstileError").textContent =
+        "Ошибка загрузки проверки, обновите страницу";
+}
 
 
 /*
@@ -794,10 +907,9 @@ spinButton.addEventListener("click", spin);
     ==========================================
     ЗАПУСК
     ==========================================
+    (loadSession() и loadTextures() теперь вызываются
+    из onTurnstileSuccess после прохождения проверки)
 */
-
-loadSession();
-loadTextures();
 
 </script>
 
