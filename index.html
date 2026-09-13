@@ -136,15 +136,6 @@
             min-height: 16px;
         }
 
-        .app-content {
-            display: none;
-            width: 100%;
-        }
-
-        .app-content.visible {
-            display: flex;
-        }
-
         /* ===================== AUTH UI ===================== */
 
         .auth-bar {
@@ -636,15 +627,15 @@
     </div>
 </div>
 
-<div class="layout">
+<div class="layout" id="layoutWrapper" style="display:none;">
 
     <!-- ===================== ONLINE SIDEBAR ===================== -->
-    <div class="online-sidebar app-content" id="onlineSidebar" style="display:none;">
+    <div class="online-sidebar" id="onlineSidebar">
         <h3>Сейчас на сайте</h3>
         <div id="onlineList"><div class="online-empty">Загрузка...</div></div>
     </div>
 
-    <div class="container app-content" id="appContent" style="display:none;">
+    <div class="container" id="appContent">
 
         <h1>Рулетка</h1>
 
@@ -832,10 +823,7 @@ async function onTurnstileSuccess(token) {
         }
 
         document.getElementById("turnstileOverlay").classList.add("hidden");
-        document.getElementById("appContent").style.display = "";
-        document.getElementById("appContent").classList.add("visible");
-        document.getElementById("onlineSidebar").style.display = "";
-        document.getElementById("onlineSidebar").classList.add("visible");
+        document.getElementById("layoutWrapper").style.display = "flex";
 
         loadSession();
         loadTextures();
