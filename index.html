@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -28,12 +27,152 @@
             width: 900px;
             max-width: 95%;
             text-align: center;
+            position: relative;
         }
 
         h1 {
             margin-bottom: 35px;
             font-size: 42px;
         }
+
+        /* ===================== AUTH UI ===================== */
+
+        .auth-bar {
+            position: fixed;
+            top: 20px;
+            right: 25px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .auth-bar button {
+            margin: 0;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .btn-secondary {
+            background: transparent !important;
+            color: white !important;
+            border: 1px solid #333 !important;
+        }
+
+        .user-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #161616;
+            border: 1px solid #292929;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+
+        .user-chip .balance {
+            color: #7CFC90;
+            font-weight: bold;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,.75);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal {
+            background: #131313;
+            border: 1px solid #292929;
+            border-radius: 16px;
+            padding: 30px;
+            width: 340px;
+            max-width: 90%;
+            text-align: left;
+        }
+
+        .modal h2 {
+            margin: 0 0 20px;
+            font-size: 22px;
+        }
+
+        .modal label {
+            display: block;
+            font-size: 13px;
+            color: #999;
+            margin: 14px 0 6px;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #2c2c2c;
+            background: #0d0d0d;
+            color: white;
+            font-size: 14px;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #555;
+        }
+
+        .modal .modal-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 22px;
+        }
+
+        .modal .modal-actions button {
+            margin: 0;
+            padding: 10px 22px;
+            font-size: 14px;
+        }
+
+        .modal .switch-link {
+            background: none;
+            color: #888;
+            border: none;
+            font-size: 13px;
+            padding: 0;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .modal .close-x {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            color: #888;
+            border: none;
+            font-size: 20px;
+            padding: 4px 8px;
+            margin: 0;
+        }
+
+        .modal {
+            position: relative;
+        }
+
+        .auth-error {
+            color: #ff5f5f;
+            font-size: 13px;
+            margin-top: 12px;
+            min-height: 16px;
+        }
+
+        /* ===================== РУЛЕТКА (как было) ===================== */
 
         .roulette-wrapper {
             position: relative;
@@ -45,7 +184,6 @@
             padding: 25px 0;
         }
 
-        /* Центральная линия */
         .pointer {
             position: absolute;
             z-index: 10;
@@ -161,6 +299,32 @@
 
 <body>
 
+<!-- ===================== AUTH BAR ===================== -->
+<div class="auth-bar" id="authBar">
+    <!-- Заполняется скриптом: либо кнопки Войти/Регистрация, либо чип пользователя -->
+</div>
+
+<!-- ===================== МОДАЛКА ВХОДА/РЕГИСТРАЦИИ ===================== -->
+<div class="modal-overlay" id="authModalOverlay">
+    <div class="modal">
+        <button class="close-x" id="closeModalBtn">×</button>
+        <h2 id="authModalTitle">Вход</h2>
+
+        <label for="authUsername">Логин</label>
+        <input type="text" id="authUsername" autocomplete="username" placeholder="Ваш логин">
+
+        <label for="authPassword">Пароль</label>
+        <input type="password" id="authPassword" autocomplete="current-password" placeholder="Пароль">
+
+        <div class="auth-error" id="authError"></div>
+
+        <div class="modal-actions">
+            <button class="switch-link" id="switchModeBtn">Нет аккаунта? Регистрация</button>
+            <button id="authSubmitBtn">Войти</button>
+        </div>
+    </div>
+</div>
+
 <div class="container">
 
     <h1>Рулетка</h1>
@@ -194,6 +358,11 @@ const GITHUB_REPOSITORY = "DuckDrop";
 
 const TEXTURES_FOLDER = "Textures";
 
+// Адрес вашего задеплоенного Cloudflare Worker.
+// Замените на реальный после деплоя, например:
+// "https://duckdrop-auth.ВАШ_САБДОМЕН.workers.dev"
+const WORKER_URL = "https://ЗАМЕНИТЕ-НА-АДРЕС-ВАШЕГО-WORKER.workers.dev";
+
 
 /*
     ==========================================
@@ -205,9 +374,185 @@ const itemsContainer = document.getElementById("items");
 const spinButton = document.getElementById("spinButton");
 const result = document.getElementById("result");
 
+const authBar = document.getElementById("authBar");
+const authModalOverlay = document.getElementById("authModalOverlay");
+const authModalTitle = document.getElementById("authModalTitle");
+const authUsername = document.getElementById("authUsername");
+const authPassword = document.getElementById("authPassword");
+const authError = document.getElementById("authError");
+const authSubmitBtn = document.getElementById("authSubmitBtn");
+const switchModeBtn = document.getElementById("switchModeBtn");
+const closeModalBtn = document.getElementById("closeModalBtn");
+
 
 let items = [];
 let spinning = false;
+
+let authMode = "login"; // "login" | "register"
+let currentUser = null; // { username, balance } — только для отображения в браузере
+
+
+/*
+    ==========================================
+    АВТОРИЗАЦИЯ
+    ==========================================
+*/
+
+function loadSession() {
+    const saved = localStorage.getItem("duckdrop_user");
+    if (saved) {
+        try {
+            currentUser = JSON.parse(saved);
+        } catch (e) {
+            currentUser = null;
+        }
+    }
+    renderAuthBar();
+}
+
+function saveSession() {
+    if (currentUser) {
+        localStorage.setItem("duckdrop_user", JSON.stringify(currentUser));
+    } else {
+        localStorage.removeItem("duckdrop_user");
+    }
+}
+
+function renderAuthBar() {
+    authBar.innerHTML = "";
+
+    if (currentUser) {
+        const chip = document.createElement("div");
+        chip.className = "user-chip";
+        chip.innerHTML = `
+            <span>${escapeHtml(currentUser.username)}</span>
+            <span class="balance">${currentUser.balance ?? 0}₽</span>
+        `;
+
+        const logoutBtn = document.createElement("button");
+        logoutBtn.className = "btn-secondary";
+        logoutBtn.textContent = "Выйти";
+        logoutBtn.addEventListener("click", () => {
+            currentUser = null;
+            saveSession();
+            renderAuthBar();
+        });
+
+        authBar.appendChild(chip);
+        authBar.appendChild(logoutBtn);
+    } else {
+        const loginBtn = document.createElement("button");
+        loginBtn.className = "btn-secondary";
+        loginBtn.textContent = "Войти";
+        loginBtn.addEventListener("click", () => openAuthModal("login"));
+
+        const registerBtn = document.createElement("button");
+        registerBtn.textContent = "Регистрация";
+        registerBtn.addEventListener("click", () => openAuthModal("register"));
+
+        authBar.appendChild(loginBtn);
+        authBar.appendChild(registerBtn);
+    }
+}
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function openAuthModal(mode) {
+    authMode = mode;
+    authError.textContent = "";
+    authUsername.value = "";
+    authPassword.value = "";
+    updateModalTexts();
+    authModalOverlay.classList.add("open");
+    authUsername.focus();
+}
+
+function closeAuthModal() {
+    authModalOverlay.classList.remove("open");
+}
+
+function updateModalTexts() {
+    if (authMode === "login") {
+        authModalTitle.textContent = "Вход";
+        authSubmitBtn.textContent = "Войти";
+        switchModeBtn.textContent = "Нет аккаунта? Регистрация";
+    } else {
+        authModalTitle.textContent = "Регистрация";
+        authSubmitBtn.textContent = "Создать аккаунт";
+        switchModeBtn.textContent = "Уже есть аккаунт? Войти";
+    }
+}
+
+switchModeBtn.addEventListener("click", () => {
+    authMode = authMode === "login" ? "register" : "login";
+    authError.textContent = "";
+    updateModalTexts();
+});
+
+closeModalBtn.addEventListener("click", closeAuthModal);
+
+authModalOverlay.addEventListener("click", (e) => {
+    if (e.target === authModalOverlay) {
+        closeAuthModal();
+    }
+});
+
+authSubmitBtn.addEventListener("click", submitAuthForm);
+
+async function submitAuthForm() {
+
+    const username = authUsername.value.trim();
+    const password = authPassword.value;
+
+    authError.textContent = "";
+
+    if (!username || !password) {
+        authError.textContent = "Заполните оба поля";
+        return;
+    }
+
+    if (WORKER_URL.includes("ЗАМЕНИТЕ")) {
+        authError.textContent = "Сначала укажите адрес Worker'а в коде (WORKER_URL)";
+        return;
+    }
+
+    authSubmitBtn.disabled = true;
+    authSubmitBtn.textContent = "Подождите...";
+
+    try {
+
+        const endpoint = authMode === "login" ? "/api/login" : "/api/register";
+
+        const response = await fetch(WORKER_URL + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+            authError.textContent = data.error || "Что-то пошло не так";
+            return;
+        }
+
+        currentUser = data.user;
+        saveSession();
+        renderAuthBar();
+        closeAuthModal();
+
+    } catch (error) {
+        console.error(error);
+        authError.textContent = "Не удалось связаться с сервером";
+    } finally {
+        authSubmitBtn.disabled = false;
+        updateModalTexts();
+    }
+}
 
 
 /*
@@ -233,10 +578,6 @@ async function loadTextures() {
 
         const files = await response.json();
 
-        /*
-            Оставляем только GIF
-        */
-
         const gifFiles = files.filter(file =>
             file.type === "file" &&
             file.name.toLowerCase().endsWith(".gif")
@@ -246,26 +587,10 @@ async function loadTextures() {
             throw new Error("В папке Textures нет GIF файлов.");
         }
 
-
-        /*
-            Создаём предметы
-        */
-
         items = gifFiles.map(file => {
-
-            /*
-                Убираем .gif
-
-                Например:
-
-                Алмаз.gif
-                ↓
-                Алмаз
-            */
 
             const name = file.name
                 .replace(/\.gif$/i, "");
-
 
             return {
                 name: name,
@@ -274,20 +599,9 @@ async function loadTextures() {
 
         });
 
-
-        /*
-            Перемешиваем порядок
-        */
-
         shuffle(items);
 
-
-        /*
-            Строим рулетку
-        */
-
         renderRoulette();
-
 
         spinButton.disabled = false;
 
@@ -339,12 +653,6 @@ function renderRoulette() {
 
     itemsContainer.innerHTML = "";
 
-
-    /*
-        Дублируем предметы несколько раз,
-        чтобы рулетка могла долго ехать.
-    */
-
     const rouletteItems = [];
 
     for (let i = 0; i < 8; i++) {
@@ -357,13 +665,11 @@ function renderRoulette() {
 
     }
 
-
     rouletteItems.forEach(item => {
 
         const element = document.createElement("div");
 
         element.className = "item";
-
 
         const image = document.createElement("img");
 
@@ -371,13 +677,11 @@ function renderRoulette() {
 
         image.alt = item.name;
 
-
         const name = document.createElement("div");
 
         name.className = "item-name";
 
         name.textContent = item.name;
-
 
         element.appendChild(image);
         element.appendChild(name);
@@ -400,58 +704,34 @@ function spin() {
     if (spinning || items.length === 0)
         return;
 
-
     spinning = true;
 
     spinButton.disabled = true;
 
     result.textContent = "";
 
-
-    /*
-        Сбрасываем позицию
-    */
-
     itemsContainer.style.transition = "none";
 
     itemsContainer.style.transform =
         "translateX(0px)";
 
-
-    /*
-        Даём браузеру применить позицию
-    */
-
     requestAnimationFrame(() => {
 
         requestAnimationFrame(() => {
 
-            /*
-                Случайный победитель
-            */
-
             const winnerIndex =
                 Math.floor(Math.random() * items.length);
-
-
-            /*
-                Берём элемент из первой копии,
-                но крутим далеко вперёд
-            */
 
             const rounds = 5;
 
             const actualIndex =
                 rounds * items.length + winnerIndex;
 
-
             const elements =
                 itemsContainer.children;
 
-
             const winner =
                 elements[actualIndex];
-
 
             if (!winner) {
 
@@ -461,55 +741,27 @@ function spin() {
                 return;
             }
 
-
-            /*
-                Центр рулетки
-            */
-
             const containerCenter =
                 document.querySelector(".roulette-wrapper")
                 .offsetWidth / 2;
-
-
-            /*
-                Центр предмета
-            */
 
             const itemCenter =
                 winner.offsetLeft +
                 winner.offsetWidth / 2;
 
-
-            /*
-                Небольшой случайный сдвиг,
-                чтобы результат выглядел живее
-            */
-
             const randomOffset =
                 (Math.random() - 0.5) * 20;
-
 
             const target =
                 containerCenter -
                 itemCenter +
                 randomOffset;
 
-
-            /*
-                Анимация
-            */
-
             itemsContainer.style.transition =
                 "transform 5s cubic-bezier(.12,.75,.15,1)";
 
-
             itemsContainer.style.transform =
                 `translateX(${target}px)`;
-
-
-            /*
-                После завершения
-            */
 
             setTimeout(() => {
 
@@ -544,6 +796,7 @@ spinButton.addEventListener("click", spin);
     ==========================================
 */
 
+loadSession();
 loadTextures();
 
 </script>
