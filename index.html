@@ -20,19 +20,84 @@
 
             display: flex;
             justify-content: center;
-            align-items: center;
+        }
+
+        .layout {
+            display: flex;
+            width: 100%;
+            max-width: 1300px;
+            gap: 25px;
+            padding: 90px 20px 40px;
         }
 
         .container {
-            width: 900px;
-            max-width: 95%;
+            flex: 1;
             text-align: center;
             position: relative;
+            min-width: 0;
         }
 
         h1 {
             margin-bottom: 35px;
             font-size: 42px;
+        }
+
+        /* ===================== ONLINE SIDEBAR ===================== */
+
+        .online-sidebar {
+            width: 220px;
+            flex-shrink: 0;
+        }
+
+        .online-sidebar h3 {
+            font-size: 15px;
+            color: #999;
+            margin: 0 0 14px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .online-user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #131313;
+            border: 1px solid #232323;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: .15s;
+        }
+
+        .online-user-card:hover {
+            border-color: #444;
+            transform: translateX(2px);
+        }
+
+        .online-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .online-user-card .name {
+            font-size: 13px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .online-empty {
+            color: #555;
+            font-size: 13px;
         }
 
         /* ===================== TURNSTILE ГЕЙТ ===================== */
@@ -73,10 +138,11 @@
 
         .app-content {
             display: none;
+            width: 100%;
         }
 
         .app-content.visible {
-            display: block;
+            display: flex;
         }
 
         /* ===================== AUTH UI ===================== */
@@ -112,6 +178,7 @@
             padding: 8px 16px;
             border-radius: 10px;
             font-size: 14px;
+            cursor: pointer;
         }
 
         .user-chip .balance {
@@ -141,6 +208,11 @@
             width: 340px;
             max-width: 90%;
             text-align: left;
+            position: relative;
+        }
+
+        .modal.wide {
+            width: 560px;
         }
 
         .modal h2 {
@@ -155,7 +227,7 @@
             margin: 14px 0 6px;
         }
 
-        .modal input {
+        .modal input, .modal textarea {
             width: 100%;
             padding: 10px 12px;
             border-radius: 8px;
@@ -163,9 +235,11 @@
             background: #0d0d0d;
             color: white;
             font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
         }
 
-        .modal input:focus {
+        .modal input:focus, .modal textarea:focus {
             outline: none;
             border-color: #555;
         }
@@ -205,10 +279,6 @@
             margin: 0;
         }
 
-        .modal {
-            position: relative;
-        }
-
         .auth-error {
             color: #ff5f5f;
             font-size: 13px;
@@ -216,7 +286,186 @@
             min-height: 16px;
         }
 
-        /* ===================== РУЛЕТКА (как было) ===================== */
+        /* ===================== ПРОФИЛЬ ===================== */
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 8px;
+        }
+
+        .profile-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .profile-name-row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-name-row .pname {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .profile-name-row .pbalance {
+            color: #7CFC90;
+            font-size: 13px;
+        }
+
+        .profile-description-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin: 14px 0 4px;
+        }
+
+        .profile-description-text {
+            font-size: 13px;
+            color: #ccc;
+            flex: 1;
+            min-height: 20px;
+            white-space: pre-wrap;
+        }
+
+        .edit-pencil {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 15px;
+            padding: 2px 4px;
+            margin: 0;
+        }
+
+        .profile-description-edit textarea {
+            min-height: 70px;
+        }
+
+        .profile-description-edit .modal-actions {
+            margin-top: 10px;
+        }
+
+        .inventory-title {
+            font-size: 13px;
+            color: #999;
+            margin: 18px 0 10px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .inventory-slot {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            border: 1px solid #292929;
+            background: #191919;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 4px;
+            cursor: default;
+        }
+
+        .inventory-slot.filled {
+            cursor: pointer;
+        }
+
+        .inventory-slot img {
+            width: 34px;
+            height: 34px;
+            object-fit: contain;
+        }
+
+        .inventory-slot .slot-name {
+            font-size: 9px;
+            color: #ccc;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .inventory-slot .remove-x {
+            position: absolute;
+            top: 2px;
+            right: 4px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* ===================== РЕЗУЛЬТАТ ПРОКРУТА ===================== */
+
+        .result-slot {
+            display: none;
+            margin-top: 25px;
+            background: #131313;
+            border: 1px solid #292929;
+            border-radius: 14px;
+            padding: 20px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+        }
+
+        .result-slot.visible {
+            display: flex;
+        }
+
+        .result-slot .result-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            text-align: left;
+        }
+
+        .result-slot img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .result-slot .result-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .result-slot .result-price {
+            color: #7CFC90;
+            font-size: 13px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .result-actions button {
+            margin: 0;
+            padding: 10px 18px;
+            font-size: 13px;
+        }
+
+        /* ===================== РУЛЕТКА ===================== */
 
         .roulette-wrapper {
             position: relative;
@@ -231,62 +480,53 @@
         .pointer {
             position: absolute;
             z-index: 10;
-
             top: 0;
             left: 50%;
-
             transform: translateX(-50%);
-
             width: 4px;
             height: 100%;
-
             background: white;
-
-            box-shadow:
-                0 0 10px rgba(255,255,255,.8);
+            box-shadow: 0 0 10px rgba(255,255,255,.8);
         }
 
         .items {
             display: flex;
             gap: 12px;
-
             transform: translateX(0);
-
             will-change: transform;
         }
 
         .item {
             flex: 0 0 120px;
-
             height: 150px;
-
-            background: #191919;
             border: 1px solid #292929;
-
             border-radius: 14px;
-
             display: flex;
             flex-direction: column;
-
             justify-content: center;
             align-items: center;
-
             gap: 10px;
-
             user-select: none;
+            background: #191919;
         }
+
+        /* Редкость — фон в зависимости от процента выпадения */
+        .rarity-common     { background: linear-gradient(160deg, #1c1c1c, #232323); }
+        .rarity-uncommon   { background: linear-gradient(160deg, #142a3d, #1c3b55); border-color: #2f5d82; }
+        .rarity-rare       { background: linear-gradient(160deg, #2a1a45, #3d2566); border-color: #6b3fb0; }
+        .rarity-legendary  { background: linear-gradient(160deg, #4a2e05, #7a4a08); border-color: #d99a1f; }
+        .rarity-mythical   { background: linear-gradient(160deg, #4a0e17, #7a1424); border-color: #e0304a;
+                              box-shadow: 0 0 14px rgba(224,48,74,.35); }
 
         .item img {
             width: 85px;
             height: 85px;
-
             object-fit: contain;
         }
 
         .item-name {
             font-size: 14px;
             color: #ddd;
-
             max-width: 105px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -295,48 +535,32 @@
 
         button {
             margin-top: 30px;
-
             padding: 14px 45px;
-
             border: none;
             border-radius: 12px;
-
             background: white;
             color: black;
-
             font-size: 17px;
             font-weight: bold;
-
             cursor: pointer;
-
             transition: .2s;
         }
 
-        button:hover {
-            transform: scale(1.04);
-        }
-
-        button:active {
-            transform: scale(.97);
-        }
-
-        button:disabled {
-            opacity: .5;
-            cursor: not-allowed;
-            transform: none;
-        }
+        button:hover { transform: scale(1.04); }
+        button:active { transform: scale(.97); }
+        button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
         #result {
             margin-top: 25px;
-
             min-height: 30px;
-
             font-size: 22px;
             font-weight: bold;
         }
 
-        .loading {
-            color: #888;
+        .loading { color: #888; }
+
+        @media (max-width: 900px) {
+            .online-sidebar { display: none; }
         }
     </style>
 </head>
@@ -357,12 +581,8 @@
     <div id="turnstileError"></div>
 </div>
 
-<div class="app-content" id="appContent">
-
 <!-- ===================== AUTH BAR ===================== -->
-<div class="auth-bar" id="authBar">
-    <!-- Заполняется скриптом: либо кнопки Войти/Регистрация, либо чип пользователя -->
-</div>
+<div class="auth-bar" id="authBar"></div>
 
 <!-- ===================== МОДАЛКА ВХОДА/РЕГИСТРАЦИИ ===================== -->
 <div class="modal-overlay" id="authModalOverlay">
@@ -385,27 +605,77 @@
     </div>
 </div>
 
-<div class="container">
+<!-- ===================== МОДАЛКА ПРОФИЛЯ ===================== -->
+<div class="modal-overlay" id="profileModalOverlay">
+    <div class="modal wide">
+        <button class="close-x" id="closeProfileBtn">×</button>
 
-    <h1>Рулетка</h1>
-
-    <div class="roulette-wrapper">
-        <div class="pointer"></div>
-
-        <div class="items" id="items">
-            <div class="loading">Загрузка предметов...</div>
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">?</div>
+            <div class="profile-name-row">
+                <div class="pname" id="profileName">—</div>
+                <div class="pbalance" id="profileBalance"></div>
+            </div>
         </div>
+
+        <div class="profile-description-row" id="profileDescriptionRow">
+            <div class="profile-description-text" id="profileDescriptionText"></div>
+            <button class="edit-pencil" id="editDescriptionBtn" title="Редактировать описание">✎</button>
+        </div>
+
+        <div class="profile-description-edit" id="profileDescriptionEdit" style="display:none;">
+            <textarea id="profileDescriptionInput" maxlength="300" placeholder="Немного о себе..."></textarea>
+            <div class="modal-actions">
+                <button class="switch-link" id="cancelDescriptionBtn">Отмена</button>
+                <button id="saveDescriptionBtn">Сохранить</button>
+            </div>
+        </div>
+
+        <div class="inventory-title">Инвентарь</div>
+        <div class="inventory-grid" id="inventoryGrid"></div>
     </div>
-
-    <button id="spinButton" disabled>
-        Крутить
-    </button>
-
-    <div id="result"></div>
-
 </div>
 
-</div><!-- /appContent -->
+<div class="layout">
+
+    <!-- ===================== ONLINE SIDEBAR ===================== -->
+    <div class="online-sidebar app-content" id="onlineSidebar" style="display:none;">
+        <h3>Сейчас на сайте</h3>
+        <div id="onlineList"><div class="online-empty">Загрузка...</div></div>
+    </div>
+
+    <div class="container app-content" id="appContent" style="display:none;">
+
+        <h1>Рулетка</h1>
+
+        <div class="roulette-wrapper">
+            <div class="pointer"></div>
+            <div class="items" id="items">
+                <div class="loading">Загрузка предметов...</div>
+            </div>
+        </div>
+
+        <button id="spinButton" disabled>Крутить (10)</button>
+
+        <div id="result"></div>
+
+        <div class="result-slot" id="resultSlot">
+            <div class="result-info">
+                <img id="resultImg" src="" alt="">
+                <div>
+                    <div class="result-name" id="resultName"></div>
+                    <div class="result-price" id="resultPrice"></div>
+                </div>
+            </div>
+            <div class="result-actions">
+                <button class="btn-secondary" id="sellResultBtn">Продать</button>
+                <button id="keepResultBtn">В инвентарь</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
@@ -418,13 +688,11 @@
 
 const GITHUB_USER = "t1kodiai-bit";
 const GITHUB_REPOSITORY = "DuckDrop";
-
 const TEXTURES_FOLDER = "Textures";
 
-// Адрес вашего задеплоенного Cloudflare Worker.
-// Замените на реальный после деплоя, например:
-// "https://duckdrop-auth.ВАШ_САБДОМЕН.workers.dev"
 const WORKER_URL = "https://duckdrop-auth.t1kodiai.workers.dev";
+
+const SPIN_COST = 10;
 
 
 /*
@@ -447,12 +715,93 @@ const authSubmitBtn = document.getElementById("authSubmitBtn");
 const switchModeBtn = document.getElementById("switchModeBtn");
 const closeModalBtn = document.getElementById("closeModalBtn");
 
+const profileModalOverlay = document.getElementById("profileModalOverlay");
+const closeProfileBtn = document.getElementById("closeProfileBtn");
+const profileAvatar = document.getElementById("profileAvatar");
+const profileName = document.getElementById("profileName");
+const profileBalance = document.getElementById("profileBalance");
+const profileDescriptionRow = document.getElementById("profileDescriptionRow");
+const profileDescriptionText = document.getElementById("profileDescriptionText");
+const editDescriptionBtn = document.getElementById("editDescriptionBtn");
+const profileDescriptionEdit = document.getElementById("profileDescriptionEdit");
+const profileDescriptionInput = document.getElementById("profileDescriptionInput");
+const cancelDescriptionBtn = document.getElementById("cancelDescriptionBtn");
+const saveDescriptionBtn = document.getElementById("saveDescriptionBtn");
+const inventoryGrid = document.getElementById("inventoryGrid");
 
-let items = [];
+const resultSlot = document.getElementById("resultSlot");
+const resultImg = document.getElementById("resultImg");
+const resultName = document.getElementById("resultName");
+const resultPrice = document.getElementById("resultPrice");
+const sellResultBtn = document.getElementById("sellResultBtn");
+const keepResultBtn = document.getElementById("keepResultBtn");
+
+const onlineList = document.getElementById("onlineList");
+
+
+let items = [];       // {name, price, percent, url}
 let spinning = false;
 
-let authMode = "login"; // "login" | "register"
-let currentUser = null; // { username, balance } — только для отображения в браузере
+let authMode = "login";
+let currentUser = null;  // { username, balance, token }
+let viewingProfileUsername = null; // чей профиль сейчас открыт
+
+let pendingWin = null; // текущий невыбранный результат (продать/забрать)
+
+let onlineTimer = null;
+
+
+/*
+    ==========================================
+    УТИЛИТЫ
+    ==========================================
+*/
+
+function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// Название файла: Имя-Цена-Процент.gif
+function parseItemFile(file) {
+    const base = file.name.replace(/\.gif$/i, "");
+    const parts = base.split("-");
+
+    if (parts.length < 3) {
+        return { name: base, price: 0, percent: 1, url: file.download_url };
+    }
+
+    const percent = parseFloat(parts.pop().replace(",", "."));
+    const price = parseFloat(parts.pop().replace(",", "."));
+    const name = parts.join("-");
+
+    return {
+        name,
+        price: isNaN(price) ? 0 : price,
+        percent: (isNaN(percent) || percent <= 0) ? 0.01 : percent,
+        url: file.download_url,
+    };
+}
+
+function rarityClass(percent) {
+    if (percent <= 1) return "rarity-mythical";
+    if (percent <= 5) return "rarity-legendary";
+    if (percent <= 15) return "rarity-rare";
+    if (percent <= 35) return "rarity-uncommon";
+    return "rarity-common";
+}
+
+function weightedRandomIndex(list) {
+    const weights = list.map((it) => Math.max(0.0001, Number(it.percent) || 0.0001));
+    const total = weights.reduce((a, b) => a + b, 0);
+    let r = Math.random() * total;
+    for (let i = 0; i < weights.length; i++) {
+        r -= weights[i];
+        if (r <= 0) return i;
+    }
+    return list.length - 1;
+}
 
 
 /*
@@ -465,11 +814,6 @@ async function onTurnstileSuccess(token) {
 
     const errorBox = document.getElementById("turnstileError");
     errorBox.textContent = "Проверяем...";
-
-    if (WORKER_URL.includes("ЗАМЕНИТЕ")) {
-        errorBox.textContent = "Сначала укажите WORKER_URL в коде";
-        return;
-    }
 
     try {
 
@@ -488,10 +832,14 @@ async function onTurnstileSuccess(token) {
         }
 
         document.getElementById("turnstileOverlay").classList.add("hidden");
+        document.getElementById("appContent").style.display = "";
         document.getElementById("appContent").classList.add("visible");
+        document.getElementById("onlineSidebar").style.display = "";
+        document.getElementById("onlineSidebar").classList.add("visible");
 
         loadSession();
         loadTextures();
+        startOnlinePolling();
 
     } catch (error) {
         console.error(error);
@@ -521,7 +869,46 @@ function loadSession() {
         }
     }
     renderAuthBar();
+    if (currentUser) markOnline();
 }
+
+async function markOnline() {
+    if (!currentUser) return;
+    try {
+        const response = await fetch(WORKER_URL + "/api/online/enter", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: currentUser.token }),
+        });
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            // Сессия могла истечь (например, после долгого перерыва) — просто разлогиниваем
+            currentUser = null;
+            saveSession();
+            renderAuthBar();
+            return;
+        }
+
+        currentUser.balance = data.user.balance;
+        saveSession();
+        renderAuthBar();
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function markOffline() {
+    if (!currentUser) return;
+    // sendBeacon работает даже когда вкладка уже закрывается
+    const payload = JSON.stringify({ token: currentUser.token });
+    const blob = new Blob([payload], { type: "application/json" });
+    navigator.sendBeacon(WORKER_URL + "/api/online/leave", blob);
+}
+
+window.addEventListener("pagehide", markOffline);
+window.addEventListener("beforeunload", markOffline);
 
 function saveSession() {
     if (currentUser) {
@@ -541,11 +928,13 @@ function renderAuthBar() {
             <span>${escapeHtml(currentUser.username)}</span>
             <span class="balance">${currentUser.balance ?? 0}₽</span>
         `;
+        chip.addEventListener("click", () => openProfileModal(currentUser.username));
 
         const logoutBtn = document.createElement("button");
         logoutBtn.className = "btn-secondary";
         logoutBtn.textContent = "Выйти";
         logoutBtn.addEventListener("click", () => {
+            markOffline();
             currentUser = null;
             saveSession();
             renderAuthBar();
@@ -566,12 +955,6 @@ function renderAuthBar() {
         authBar.appendChild(loginBtn);
         authBar.appendChild(registerBtn);
     }
-}
-
-function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
 }
 
 function openAuthModal(mode) {
@@ -609,9 +992,7 @@ switchModeBtn.addEventListener("click", () => {
 closeModalBtn.addEventListener("click", closeAuthModal);
 
 authModalOverlay.addEventListener("click", (e) => {
-    if (e.target === authModalOverlay) {
-        closeAuthModal();
-    }
+    if (e.target === authModalOverlay) closeAuthModal();
 });
 
 authSubmitBtn.addEventListener("click", submitAuthForm);
@@ -625,11 +1006,6 @@ async function submitAuthForm() {
 
     if (!username || !password) {
         authError.textContent = "Заполните оба поля";
-        return;
-    }
-
-    if (WORKER_URL.includes("ЗАМЕНИТЕ")) {
-        authError.textContent = "Сначала укажите адрес Worker'а в коде (WORKER_URL)";
         return;
     }
 
@@ -653,10 +1029,16 @@ async function submitAuthForm() {
             return;
         }
 
-        currentUser = data.user;
+        currentUser = {
+            username: data.user.username,
+            balance: data.user.balance,
+            token: data.token,
+        };
+
         saveSession();
         renderAuthBar();
         closeAuthModal();
+        refreshOnlineList();
 
     } catch (error) {
         console.error(error);
@@ -665,6 +1047,202 @@ async function submitAuthForm() {
         authSubmitBtn.disabled = false;
         updateModalTexts();
     }
+}
+
+
+/*
+    ==========================================
+    ПРОФИЛЬ
+    ==========================================
+*/
+
+async function openProfileModal(username) {
+    viewingProfileUsername = username;
+
+    profileName.textContent = username;
+    profileAvatar.textContent = username.charAt(0).toUpperCase();
+    profileBalance.textContent = "";
+    profileDescriptionText.textContent = "Загрузка...";
+    inventoryGrid.innerHTML = "";
+    profileDescriptionEdit.style.display = "none";
+    profileDescriptionRow.style.display = "flex";
+
+    profileModalOverlay.classList.add("open");
+
+    try {
+        const response = await fetch(
+            `${WORKER_URL}/api/profile?username=${encodeURIComponent(username)}`
+        );
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            profileDescriptionText.textContent = "Не удалось загрузить профиль";
+            return;
+        }
+
+        renderProfile(data.user);
+
+    } catch (error) {
+        console.error(error);
+        profileDescriptionText.textContent = "Ошибка соединения";
+    }
+}
+
+function renderProfile(user) {
+    profileBalance.textContent = `${user.balance}₽`;
+    profileDescriptionText.textContent = user.description || "Пока ничего не написано.";
+
+    const isOwner = currentUser && currentUser.username === user.username;
+    editDescriptionBtn.style.display = isOwner ? "inline-block" : "none";
+
+    inventoryGrid.innerHTML = "";
+
+    for (let i = 0; i < 20; i++) {
+        const slot = document.createElement("div");
+        slot.className = "inventory-slot";
+
+        const invItem = user.inventory && user.inventory[i];
+
+        if (invItem) {
+            slot.classList.add("filled");
+            slot.classList.add(rarityClass(invItem.percent));
+
+            const img = document.createElement("img");
+            const found = items.find((it) => it.name === invItem.name);
+            img.src = found ? found.url : "";
+            img.alt = invItem.name;
+
+            const name = document.createElement("div");
+            name.className = "slot-name";
+            name.textContent = invItem.name;
+
+            slot.appendChild(img);
+            slot.appendChild(name);
+
+            if (isOwner) {
+                const removeBtn = document.createElement("div");
+                removeBtn.className = "remove-x";
+                removeBtn.textContent = "✕";
+                slot.appendChild(removeBtn);
+
+                slot.addEventListener("click", () => removeFromInventory(i));
+            }
+        }
+
+        inventoryGrid.appendChild(slot);
+    }
+}
+
+async function removeFromInventory(index) {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(WORKER_URL + "/api/inventory/remove", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: currentUser.token, index }),
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) return;
+
+        openProfileModal(currentUser.username);
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+closeProfileBtn.addEventListener("click", () => {
+    profileModalOverlay.classList.remove("open");
+});
+
+profileModalOverlay.addEventListener("click", (e) => {
+    if (e.target === profileModalOverlay) profileModalOverlay.classList.remove("open");
+});
+
+editDescriptionBtn.addEventListener("click", () => {
+    profileDescriptionInput.value = profileDescriptionText.textContent === "Пока ничего не написано."
+        ? ""
+        : profileDescriptionText.textContent;
+    profileDescriptionRow.style.display = "none";
+    profileDescriptionEdit.style.display = "block";
+});
+
+cancelDescriptionBtn.addEventListener("click", () => {
+    profileDescriptionEdit.style.display = "none";
+    profileDescriptionRow.style.display = "flex";
+});
+
+saveDescriptionBtn.addEventListener("click", async () => {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(WORKER_URL + "/api/profile/description", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                token: currentUser.token,
+                description: profileDescriptionInput.value,
+            }),
+        });
+
+        const data = await response.json();
+        if (!response.ok || !data.success) return;
+
+        profileDescriptionEdit.style.display = "none";
+        profileDescriptionRow.style.display = "flex";
+        renderProfile(data.user);
+
+    } catch (error) {
+        console.error(error);
+    }
+});
+
+
+/*
+    ==========================================
+    ОНЛАЙН-ПОЛЬЗОВАТЕЛИ
+    ==========================================
+*/
+
+function startOnlinePolling() {
+    refreshOnlineList();
+    onlineTimer = setInterval(refreshOnlineList, 15000);
+}
+
+async function refreshOnlineList() {
+    try {
+        const response = await fetch(WORKER_URL + "/api/online");
+        const data = await response.json();
+
+        if (!response.ok || !data.success) return;
+
+        renderOnlineList(data.usernames || []);
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function renderOnlineList(usernames) {
+    onlineList.innerHTML = "";
+
+    if (usernames.length === 0) {
+        onlineList.innerHTML = `<div class="online-empty">Сейчас никого нет</div>`;
+        return;
+    }
+
+    usernames.forEach((name) => {
+        const card = document.createElement("div");
+        card.className = "online-user-card";
+        card.innerHTML = `
+            <div class="online-avatar">${escapeHtml(name.charAt(0).toUpperCase())}</div>
+            <div class="name">${escapeHtml(name)}</div>
+        `;
+        card.addEventListener("click", () => openProfileModal(name));
+        onlineList.appendChild(card);
+    });
 }
 
 
@@ -684,9 +1262,7 @@ async function loadTextures() {
         const response = await fetch(apiURL);
 
         if (!response.ok) {
-            throw new Error(
-                `GitHub API error: ${response.status}`
-            );
+            throw new Error(`GitHub API error: ${response.status}`);
         }
 
         const files = await response.json();
@@ -700,17 +1276,7 @@ async function loadTextures() {
             throw new Error("В папке Textures нет GIF файлов.");
         }
 
-        items = gifFiles.map(file => {
-
-            const name = file.name
-                .replace(/\.gif$/i, "");
-
-            return {
-                name: name,
-                url: file.download_url
-            };
-
-        });
+        items = gifFiles.map(parseItemFile);
 
         shuffle(items);
 
@@ -723,11 +1289,7 @@ async function loadTextures() {
         console.error(error);
 
         itemsContainer.innerHTML = `
-            <div style="
-                width:100%;
-                padding:30px;
-                color:#ff5555;
-            ">
+            <div style="width:100%;padding:30px;color:#ff5555;">
                 Не удалось загрузить предметы
             </div>
         `;
@@ -744,15 +1306,10 @@ async function loadTextures() {
 */
 
 function shuffle(array) {
-
     for (let i = array.length - 1; i > 0; i--) {
-
         const j = Math.floor(Math.random() * (i + 1));
-
-        [array[i], array[j]] =
-        [array[j], array[i]];
+        [array[i], array[j]] = [array[j], array[i]];
     }
-
 }
 
 
@@ -769,40 +1326,27 @@ function renderRoulette() {
     const rouletteItems = [];
 
     for (let i = 0; i < 8; i++) {
-
-        items.forEach(item => {
-
-            rouletteItems.push(item);
-
-        });
-
+        items.forEach(item => rouletteItems.push(item));
     }
 
     rouletteItems.forEach(item => {
 
         const element = document.createElement("div");
-
-        element.className = "item";
+        element.className = "item " + rarityClass(item.percent);
 
         const image = document.createElement("img");
-
         image.src = item.url;
-
         image.alt = item.name;
 
         const name = document.createElement("div");
-
         name.className = "item-name";
-
         name.textContent = item.name;
 
         element.appendChild(image);
         element.appendChild(name);
 
         itemsContainer.appendChild(element);
-
     });
-
 }
 
 
@@ -812,86 +1356,172 @@ function renderRoulette() {
     ==========================================
 */
 
-function spin() {
+async function spin() {
 
-    if (spinning || items.length === 0)
+    if (spinning || items.length === 0) return;
+
+    if (!currentUser) {
+        openAuthModal("login");
         return;
+    }
+
+    if ((currentUser.balance ?? 0) < SPIN_COST) {
+        result.textContent = "Недостаточно средств";
+        return;
+    }
 
     spinning = true;
-
     spinButton.disabled = true;
-
     result.textContent = "";
+    resultSlot.classList.remove("visible");
+    pendingWin = null;
+
+    // Списываем стоимость прокрута на сервере
+    try {
+        const response = await fetch(WORKER_URL + "/api/spin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: currentUser.token }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.success) {
+            result.textContent = data.error || "Не удалось списать средства";
+            spinning = false;
+            spinButton.disabled = false;
+            return;
+        }
+
+        currentUser.balance = data.balance;
+        saveSession();
+        renderAuthBar();
+
+    } catch (error) {
+        console.error(error);
+        result.textContent = "Ошибка соединения с сервером";
+        spinning = false;
+        spinButton.disabled = false;
+        return;
+    }
+
+    // Выбираем победителя (взвешенно по проценту редкости)
+    const winnerIndex = weightedRandomIndex(items);
 
     itemsContainer.style.transition = "none";
-
-    itemsContainer.style.transform =
-        "translateX(0px)";
+    itemsContainer.style.transform = "translateX(0px)";
 
     requestAnimationFrame(() => {
-
         requestAnimationFrame(() => {
 
-            const winnerIndex =
-                Math.floor(Math.random() * items.length);
-
             const rounds = 5;
-
-            const actualIndex =
-                rounds * items.length + winnerIndex;
-
-            const elements =
-                itemsContainer.children;
-
-            const winner =
-                elements[actualIndex];
+            const actualIndex = rounds * items.length + winnerIndex;
+            const elements = itemsContainer.children;
+            const winner = elements[actualIndex];
 
             if (!winner) {
-
                 spinning = false;
                 spinButton.disabled = false;
-
                 return;
             }
 
             const containerCenter =
-                document.querySelector(".roulette-wrapper")
-                .offsetWidth / 2;
+                document.querySelector(".roulette-wrapper").offsetWidth / 2;
+            const itemCenter = winner.offsetLeft + winner.offsetWidth / 2;
+            const randomOffset = (Math.random() - 0.5) * 20;
+            const target = containerCenter - itemCenter + randomOffset;
 
-            const itemCenter =
-                winner.offsetLeft +
-                winner.offsetWidth / 2;
-
-            const randomOffset =
-                (Math.random() - 0.5) * 20;
-
-            const target =
-                containerCenter -
-                itemCenter +
-                randomOffset;
-
-            itemsContainer.style.transition =
-                "transform 5s cubic-bezier(.12,.75,.15,1)";
-
-            itemsContainer.style.transform =
-                `translateX(${target}px)`;
+            itemsContainer.style.transition = "transform 5s cubic-bezier(.12,.75,.15,1)";
+            itemsContainer.style.transform = `translateX(${target}px)`;
 
             setTimeout(() => {
 
-                result.textContent =
-                    `Выпало: ${items[winnerIndex].name}`;
+                const won = items[winnerIndex];
+                result.textContent = `Выпало: ${won.name}`;
+
+                showResultSlot(won);
 
                 spinning = false;
-
                 spinButton.disabled = false;
 
             }, 5100);
+        });
+    });
+}
 
+
+/*
+    ==========================================
+    РЕЗУЛЬТАТ ПРОКРУТА (продать / в инвентарь)
+    ==========================================
+*/
+
+function showResultSlot(item) {
+    pendingWin = item;
+
+    resultImg.src = item.url;
+    resultName.textContent = item.name;
+    resultPrice.textContent = `${item.price}₽`;
+
+    resultSlot.classList.add("visible");
+}
+
+sellResultBtn.addEventListener("click", async () => {
+    if (!pendingWin || !currentUser) return;
+
+    sellResultBtn.disabled = true;
+
+    try {
+        const response = await fetch(WORKER_URL + "/api/inventory/sell", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: currentUser.token, item: pendingWin }),
         });
 
-    });
+        const data = await response.json();
 
-}
+        if (response.ok && data.success) {
+            currentUser.balance = data.balance;
+            saveSession();
+            renderAuthBar();
+            resultSlot.classList.remove("visible");
+            pendingWin = null;
+        }
+
+    } catch (error) {
+        console.error(error);
+    } finally {
+        sellResultBtn.disabled = false;
+    }
+});
+
+keepResultBtn.addEventListener("click", async () => {
+    if (!pendingWin || !currentUser) return;
+
+    keepResultBtn.disabled = true;
+
+    try {
+        const response = await fetch(WORKER_URL + "/api/inventory/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: currentUser.token, item: pendingWin }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            resultSlot.classList.remove("visible");
+            pendingWin = null;
+        } else {
+            result.textContent = data.error || "Не удалось положить в инвентарь";
+        }
+
+    } catch (error) {
+        console.error(error);
+    } finally {
+        keepResultBtn.disabled = false;
+    }
+});
 
 
 /*
@@ -901,15 +1531,6 @@ function spin() {
 */
 
 spinButton.addEventListener("click", spin);
-
-
-/*
-    ==========================================
-    ЗАПУСК
-    ==========================================
-    (loadSession() и loadTextures() теперь вызываются
-    из onTurnstileSuccess после прохождения проверки)
-*/
 
 </script>
 
