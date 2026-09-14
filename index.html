@@ -4,9 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Рулетка</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <title>DuckDrop</title>
 
     <style>
+        :root {
+            --bg: #202124;
+            --surface: #292A2D;
+            --surface-2: #35363A;
+            --border: #3C4043;
+            --text: #E8EAED;
+            --text-secondary: #9AA0A6;
+            --accent: #FBBC04;
+            --accent-hover: #F9AB00;
+            --accent-ink: #202124;
+            --success: #81C995;
+            --danger: #F28B82;
+        }
+
         * {
             box-sizing: border-box;
         }
@@ -14,9 +32,9 @@
         body {
             margin: 0;
             min-height: 100vh;
-            background: #080808;
-            color: white;
-            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Roboto', Arial, sans-serif;
 
             display: flex;
             justify-content: center;
@@ -36,7 +54,8 @@
 
         h1 {
             margin-bottom: 35px;
-            font-size: 42px;
+            font-size: 40px;
+            font-weight: 500;
         }
 
         /* ===================== ONLINE SIDEBAR ===================== */
@@ -50,20 +69,19 @@
         }
 
         .online-sidebar h3 {
-            font-size: 15px;
-            color: #999;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
             margin: 0 0 14px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
         }
 
         .online-user-card {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: #131313;
-            border: 1px solid #232323;
-            border-radius: 10px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 10px 12px;
             margin-bottom: 8px;
             cursor: pointer;
@@ -71,19 +89,20 @@
         }
 
         .online-user-card:hover {
-            border-color: #444;
-            transform: translateX(2px);
+            background: var(--surface-2);
+            box-shadow: 0 1px 3px rgba(0,0,0,.4);
         }
 
         .online-avatar {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background: #2a2a2a;
+            background: var(--accent);
+            color: var(--accent-ink);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 500;
             font-size: 14px;
             flex-shrink: 0;
         }
@@ -96,7 +115,7 @@
         }
 
         .online-empty {
-            color: #555;
+            color: var(--text-secondary);
             font-size: 13px;
         }
 
@@ -105,7 +124,7 @@
         #turnstileOverlay {
             position: fixed;
             inset: 0;
-            background: #080808;
+            background: var(--bg);
             z-index: 500;
 
             display: flex;
@@ -120,20 +139,36 @@
         }
 
         #turnstileOverlay h2 {
-            font-size: 24px;
+            font-size: 22px;
+            font-weight: 500;
             margin: 0;
         }
 
         #turnstileOverlay p {
-            color: #999;
+            color: var(--text-secondary);
             font-size: 14px;
             margin: 0;
         }
 
         #turnstileError {
-            color: #ff5f5f;
+            color: var(--danger);
             font-size: 13px;
             min-height: 16px;
+        }
+
+        #goOfflineLink {
+            position: fixed;
+            top: 24px;
+            left: 25px;
+            z-index: 100;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        #goOfflineLink:hover {
+            color: var(--text);
         }
 
         /* ===================== AUTH UI ===================== */
@@ -156,32 +191,41 @@
 
         .btn-secondary {
             background: transparent !important;
-            color: white !important;
-            border: 1px solid #333 !important;
+            color: var(--text) !important;
+            border: 1px solid var(--border) !important;
+            box-shadow: none !important;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,.06) !important;
         }
 
         .user-chip {
             display: flex;
             align-items: center;
             gap: 12px;
-            background: #161616;
-            border: 1px solid #292929;
+            background: var(--surface);
+            border: 1px solid var(--border);
             padding: 8px 16px;
-            border-radius: 10px;
+            border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
         }
 
+        .user-chip:hover {
+            background: var(--surface-2);
+        }
+
         .user-chip .balance {
-            color: #7CFC90;
-            font-weight: bold;
+            color: var(--success);
+            font-weight: 500;
         }
 
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,.75);
+            background: rgba(0,0,0,.6);
             z-index: 200;
             justify-content: center;
             align-items: center;
@@ -192,14 +236,15 @@
         }
 
         .modal {
-            background: #131313;
-            border: 1px solid #292929;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 30px;
             width: 340px;
             max-width: 90%;
             text-align: left;
             position: relative;
+            box-shadow: 0 8px 28px rgba(0,0,0,.45);
         }
 
         .modal.wide {
@@ -208,13 +253,14 @@
 
         .modal h2 {
             margin: 0 0 20px;
-            font-size: 22px;
+            font-size: 20px;
+            font-weight: 500;
         }
 
         .modal label {
             display: block;
             font-size: 13px;
-            color: #999;
+            color: var(--text-secondary);
             margin: 14px 0 6px;
         }
 
@@ -222,9 +268,9 @@
             width: 100%;
             padding: 10px 12px;
             border-radius: 8px;
-            border: 1px solid #2c2c2c;
-            background: #0d0d0d;
-            color: white;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text);
             font-size: 14px;
             font-family: inherit;
             resize: vertical;
@@ -232,7 +278,8 @@
 
         .modal input:focus, .modal textarea:focus {
             outline: none;
-            border-color: #555;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(251,188,4,.25);
         }
 
         .modal .modal-actions {
@@ -250,7 +297,7 @@
 
         .modal .switch-link {
             background: none;
-            color: #888;
+            color: var(--text-secondary);
             border: none;
             font-size: 13px;
             padding: 0;
@@ -263,7 +310,7 @@
             top: 14px;
             right: 16px;
             background: none;
-            color: #888;
+            color: var(--text-secondary);
             border: none;
             font-size: 20px;
             padding: 4px 8px;
@@ -271,7 +318,7 @@
         }
 
         .auth-error {
-            color: #ff5f5f;
+            color: var(--danger);
             font-size: 13px;
             margin-top: 12px;
             min-height: 16px;
@@ -290,11 +337,12 @@
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: #2a2a2a;
+            background: var(--accent);
+            color: var(--accent-ink);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 500;
             font-size: 22px;
             flex-shrink: 0;
         }
@@ -306,11 +354,11 @@
 
         .profile-name-row .pname {
             font-size: 18px;
-            font-weight: bold;
+            font-weight: 500;
         }
 
         .profile-name-row .pbalance {
-            color: #7CFC90;
+            color: var(--success);
             font-size: 13px;
         }
 
@@ -323,7 +371,7 @@
 
         .profile-description-text {
             font-size: 13px;
-            color: #ccc;
+            color: var(--text-secondary);
             flex: 1;
             min-height: 20px;
             white-space: pre-wrap;
@@ -332,11 +380,15 @@
         .edit-pencil {
             background: none;
             border: none;
-            color: #888;
+            color: var(--text-secondary);
             cursor: pointer;
             font-size: 15px;
             padding: 2px 4px;
             margin: 0;
+        }
+
+        .edit-pencil:hover {
+            color: var(--accent);
         }
 
         .profile-description-edit textarea {
@@ -349,10 +401,9 @@
 
         .inventory-title {
             font-size: 13px;
-            color: #999;
+            font-weight: 500;
+            color: var(--text-secondary);
             margin: 18px 0 10px;
-            text-transform: uppercase;
-            letter-spacing: .5px;
         }
 
         .inventory-grid {
@@ -365,9 +416,9 @@
 
         .inventory-slot {
             aspect-ratio: 1;
-            border-radius: 10px;
-            border: 1px solid #292929;
-            background: #191919;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -389,7 +440,7 @@
 
         .inventory-slot .slot-name {
             font-size: 9px;
-            color: #ccc;
+            color: var(--text-secondary);
             max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -401,7 +452,7 @@
             top: 2px;
             right: 4px;
             font-size: 12px;
-            color: #888;
+            color: var(--text-secondary);
         }
 
         /* ===================== РЕЗУЛЬТАТ ПРОКРУТА ===================== */
@@ -409,9 +460,9 @@
         .result-slot {
             display: none;
             margin-top: 25px;
-            background: #131313;
-            border: 1px solid #292929;
-            border-radius: 14px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             padding: 20px;
             align-items: center;
             justify-content: space-between;
@@ -436,12 +487,12 @@
         }
 
         .result-slot .result-name {
-            font-weight: bold;
+            font-weight: 500;
             font-size: 16px;
         }
 
         .result-slot .result-price {
-            color: #7CFC90;
+            color: var(--success);
             font-size: 13px;
         }
 
@@ -462,9 +513,9 @@
             position: relative;
             width: 100%;
             overflow: hidden;
-            border-radius: 18px;
-            background: #111;
-            border: 1px solid #252525;
+            border-radius: 12px;
+            background: var(--surface);
+            border: 1px solid var(--border);
             padding: 25px 0;
         }
 
@@ -476,8 +527,8 @@
             transform: translateX(-50%);
             width: 4px;
             height: 100%;
-            background: white;
-            box-shadow: 0 0 10px rgba(255,255,255,.8);
+            background: var(--accent);
+            box-shadow: 0 0 10px rgba(251,188,4,.6);
         }
 
         .items {
@@ -490,23 +541,23 @@
         .item {
             flex: 0 0 120px;
             height: 150px;
-            border: 1px solid #292929;
-            border-radius: 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 10px;
             user-select: none;
-            background: #191919;
+            background: var(--surface-2);
         }
 
         /* Редкость — фон в зависимости от процента выпадения */
-        .rarity-common     { background: linear-gradient(160deg, #1c1c1c, #232323); }
-        .rarity-uncommon   { background: linear-gradient(160deg, #142a3d, #1c3b55); border-color: #2f5d82; }
-        .rarity-rare       { background: linear-gradient(160deg, #2a1a45, #3d2566); border-color: #6b3fb0; }
-        .rarity-legendary  { background: linear-gradient(160deg, #4a2e05, #7a4a08); border-color: #d99a1f; }
-        .rarity-mythical   { background: linear-gradient(160deg, #4a0e17, #7a1424); border-color: #e0304a;
+        .rarity-common     { background: linear-gradient(160deg, #2A2B2E, #35363A); }
+        .rarity-uncommon   { background: linear-gradient(160deg, #17324A, #1E4467); border-color: #4A90D9; }
+        .rarity-rare       { background: linear-gradient(160deg, #331B57, #4A2A7A); border-color: #A374E0; }
+        .rarity-legendary  { background: linear-gradient(160deg, #4A3405, #7A5708); border-color: var(--accent); }
+        .rarity-mythical   { background: linear-gradient(160deg, #4A0E17, #7A1424); border-color: #E0304A;
                               box-shadow: 0 0 14px rgba(224,48,74,.35); }
 
         .item img {
@@ -517,7 +568,7 @@
 
         .item-name {
             font-size: 14px;
-            color: #ddd;
+            color: var(--text);
             max-width: 105px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -526,29 +577,35 @@
 
         button {
             margin-top: 30px;
-            padding: 14px 45px;
+            padding: 12px 32px;
             border: none;
-            border-radius: 12px;
-            background: white;
-            color: black;
-            font-size: 17px;
-            font-weight: bold;
+            border-radius: 24px;
+            background: var(--accent);
+            color: var(--accent-ink);
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 500;
             cursor: pointer;
-            transition: .2s;
+            transition: .15s;
+            box-shadow: 0 1px 2px rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.15);
         }
 
-        button:hover { transform: scale(1.04); }
-        button:active { transform: scale(.97); }
-        button:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+        button:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 1px 3px rgba(0,0,0,.4), 0 4px 8px rgba(0,0,0,.2);
+        }
+
+        button:active { box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+        button:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
 
         #result {
             margin-top: 25px;
             min-height: 30px;
-            font-size: 22px;
-            font-weight: bold;
+            font-size: 20px;
+            font-weight: 500;
         }
 
-        .loading { color: #888; }
+        .loading { color: var(--text-secondary); }
 
         @media (max-width: 900px) {
             .online-sidebar { display: none; }
@@ -565,6 +622,7 @@
 
     <div class="cf-turnstile"
          data-sitekey="0x4AAAAAAEyoRybxXYtoTAtX"
+         data-theme="dark"
          data-callback="onTurnstileSuccess"
          data-error-callback="onTurnstileError">
     </div>
@@ -574,6 +632,8 @@
 
 <!-- ===================== AUTH BAR ===================== -->
 <div class="auth-bar" id="authBar"></div>
+
+<div id="goOfflineLink">Перед выходом с сайта нажмите сюда</div>
 
 <!-- ===================== МОДАЛКА ВХОДА/РЕГИСТРАЦИИ ===================== -->
 <div class="modal-overlay" id="authModalOverlay">
@@ -897,6 +957,41 @@ function markOffline() {
 
 window.addEventListener("pagehide", markOffline);
 window.addEventListener("beforeunload", markOffline);
+
+const goOfflineLink = document.getElementById("goOfflineLink");
+
+goOfflineLink.addEventListener("click", async () => {
+    if (!currentUser) {
+        goOfflineLink.textContent = "Вы не вошли в аккаунт";
+        return;
+    }
+
+    goOfflineLink.textContent = "Отмечаем офлайн...";
+
+    try {
+        const response = await fetch(WORKER_URL + "/api/online/leave", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token: currentUser.token }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            goOfflineLink.textContent = "Готово, теперь можно закрывать вкладку";
+        } else {
+            goOfflineLink.textContent = "Не получилось, попробуйте ещё раз";
+        }
+
+    } catch (error) {
+        console.error(error);
+        goOfflineLink.textContent = "Ошибка соединения, попробуйте ещё раз";
+    }
+
+    setTimeout(() => {
+        goOfflineLink.textContent = "Перед выходом с сайта нажмите сюда";
+    }, 4000);
+});
 
 function saveSession() {
     if (currentUser) {
