@@ -215,21 +215,6 @@
             min-height: 16px;
         }
 
-        #goOfflineLink {
-            position: fixed;
-            top: 68px;
-            left: 25px;
-            z-index: 100;
-            color: var(--text-secondary);
-            font-size: 13px;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        #goOfflineLink:hover {
-            color: var(--text);
-        }
-
         /* ===================== AUTH UI ===================== */
 
         .auth-bar {
@@ -696,8 +681,6 @@
 <!-- ===================== AUTH BAR ===================== -->
 <div class="auth-bar" id="authBar"></div>
 
-<div id="goOfflineLink">Перед выходом с сайта нажмите сюда</div>
-
 <!-- ===================== МОДАЛКА ВХОДА/РЕГИСТРАЦИИ ===================== -->
 <div class="modal-overlay" id="authModalOverlay">
     <div class="modal">
@@ -1020,41 +1003,6 @@ function markOffline() {
 
 window.addEventListener("pagehide", markOffline);
 window.addEventListener("beforeunload", markOffline);
-
-const goOfflineLink = document.getElementById("goOfflineLink");
-
-goOfflineLink.addEventListener("click", async () => {
-    if (!currentUser) {
-        goOfflineLink.textContent = "Вы не вошли в аккаунт";
-        return;
-    }
-
-    goOfflineLink.textContent = "Отмечаем офлайн...";
-
-    try {
-        const response = await fetch(WORKER_URL + "/api/online/leave", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token: currentUser.token }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-            goOfflineLink.textContent = "Готово, теперь можно закрывать вкладку";
-        } else {
-            goOfflineLink.textContent = "Не получилось, попробуйте ещё раз";
-        }
-
-    } catch (error) {
-        console.error(error);
-        goOfflineLink.textContent = "Ошибка соединения, попробуйте ещё раз";
-    }
-
-    setTimeout(() => {
-        goOfflineLink.textContent = "Перед выходом с сайта нажмите сюда";
-    }, 4000);
-});
 
 function saveSession() {
     if (currentUser) {
